@@ -37,10 +37,14 @@ namespace Zeptomoby.OrbitTools
 
       #region Properties
 
-      private Tle       Tle        { get; set; }
+      private Tle   Tle      { get; set; }
+      public string TleLine1 { get { return Tle.Line1; }}
+      public string TleLine2 { get { return Tle.Line2; }}
+
+      public Julian   Epoch     { get; private set; }
+      public DateTime EpochTime { get { return Epoch.ToTime(); }}
+
       private NoradBase NoradModel { get; set; }
-      public Julian     Epoch      { get; private set; }
-      public  DateTime  EpochTime  { get { return Epoch.ToTime(); }}
 
       // "Recovered" from the input elements
       public double SemiMajor    { get { return m_aeAxisSemiMajorRec; }}
@@ -153,11 +157,11 @@ namespace Zeptomoby.OrbitTools
       /// <summary>
       /// Calculate satellite ECI position/velocity for a given time.
       /// </summary>
-      /// <param name="tsince">Target time, in minutes past the TLE epoch.</param>
+      /// <param name="mpe">Target time, in minutes past the TLE epoch.</param>
       /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
-      public EciTime GetPosition(double minutesPastEpoch)
+      public EciTime PositionEci(double mpe)
       {
-         EciTime eci = NoradModel.GetPosition(minutesPastEpoch);
+         EciTime eci = NoradModel.GetPosition(mpe);
 
          // Convert ECI vector units from AU to kilometers
          double radiusAe = Globals.Xkmper / Globals.Ae;
@@ -173,9 +177,31 @@ namespace Zeptomoby.OrbitTools
       /// </summary>
       /// <param name="utc">Target time (UTC).</param>
       /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
+      public EciTime PositionEci(DateTime utc)
+      {
+         return PositionEci(TPlusEpoch(utc).TotalMinutes);
+      }
+
+      /// <summary>
+      /// Calculate satellite ECI position/velocity for a given time.
+      /// </summary>
+      /// <param name="mpe">Target time, in minutes past the TLE epoch.</param>
+      /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
+      [Obsolete("Use PositionEci()")]
+      public EciTime GetPosition(double mpe)
+      {
+         return PositionEci(mpe);
+      }
+
+      /// <summary>
+      /// Calculate ECI position/velocity for a given time.
+      /// </summary>
+      /// <param name="utc">Target time (UTC).</param>
+      /// <returns>Kilometer-based position/velocity ECI coordinates.</returns>
+      [Obsolete("Use PositionEci()")]
       public EciTime GetPosition(DateTime utc)
       {
-         return GetPosition(TPlusEpoch(utc).TotalMinutes);
+         return PositionEci(TPlusEpoch(utc).TotalMinutes);
       }
 
       #endregion

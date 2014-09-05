@@ -3,9 +3,20 @@ Revision History for the OrbitTools.Orbit assembly - Public Edition
 Copyright (c) Michael F. Henry
 www.zeptomoby.com/satellites
 
+Version 1.2.0.0 2014-06-19
+
+   Added class Satellite.
+   Method Orbit.GetPosition() (two overrides) is deprecated; use 
+      method Orbit.PositionEci() (two overrides).
+
+Version 1.1.1.0 2013-09-07
+
+   Added properties Orbit.TleLine1 and Orbit.TleLine2.
+
 Version 1.1.0.0 2012-10-27
 
-   OrbitTools.Core library updates:
+   Updates for OrbitTools.Core changes:
+
       Class CoordGeo renamed Geo, added derived class GeoTime.
       Class CoordTopo renamed Topo.
       Use new classes EciTime, GeoTime, TopoTime.

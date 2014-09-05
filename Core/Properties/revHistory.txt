@@ -3,6 +3,11 @@ Revision History for the OrbitTools.Core assembly - Public Edition
 Copyright (c) Michael F. Henry
 www.zeptomoby.com/satellites
 
+Version 1.2.0.0 2014-06-28
+
+   Class Site now derives from IEciObject.
+   Method Site.GetPosition(Julian) is deprecated; use PositionEci(Julian).
+
 Version 1.1.0.0 2012-10-27
 
    Added classes EciTime, GeoTime, and TopoTime which encapsulate 

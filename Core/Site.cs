@@ -1,8 +1,8 @@
 //
 // Site.cs
 //
-// Copyright (c) 2003-2012 Michael F. Henry
-// Version 06/2012
+// Copyright (c) 2003-2014 Michael F. Henry
+// Version 06/2014
 //
 using System;
 using System.Globalization;
@@ -15,6 +15,11 @@ namespace Zeptomoby.OrbitTools
    public sealed class Site
    {
       #region Properties
+
+      /// <summary>
+      /// The name of the location.
+      /// </summary>
+      public string Name { get; private set; }
 
       /// <summary>
       /// Latitude, in radians. A negative value indicates latitude south.
@@ -37,7 +42,7 @@ namespace Zeptomoby.OrbitTools
       public double LongitudeDeg { get { return Geo.LongitudeDeg; } }
 
       /// <summary>
-      /// The altitude of the site, in kilometers
+      /// The altitude of the site above the ellipsoid model, in kilometers
       /// </summary>
       public double Altitude { get { return Geo.Altitude; } }
     
@@ -57,11 +62,12 @@ namespace Zeptomoby.OrbitTools
       /// <param name="degLon">Longitude in degrees (negative west).</param>
       /// <param name="kmAlt">Altitude in kilometers.</param>
       /// <param name="model">The earth ellipsoid model.</param>
-      public Site(double degLat, double degLon, double kmAlt)
+      public Site(double degLat, double degLon, double kmAlt, string name = "")
       {
          Geo = new Geo(Globals.ToRadians(degLat),
                        Globals.ToRadians(degLon),
                        kmAlt);
+         Name = name;
       }
 
       /// <summary>
@@ -76,13 +82,34 @@ namespace Zeptomoby.OrbitTools
       #endregion
  
       /// <summary>
-      /// Returns the ECI coordinates of the site at the given time.
+      /// Calculates the ECI coordinates of the site.
+      /// </summary>
+      /// <param name="time">Time of position calculation.</param>
+      /// <returns>The site's ECI coordinates at the given time.</returns>
+      [Obsolete("Use PositionEci()")]
+      public EciTime GetPosition(Julian time)
+      {
+         return new EciTime(Geo, time);
+      }
+
+      /// <summary>
+      /// Calculates the ECI coordinates of the site.
       /// </summary>
       /// <param name="date">Time of position calculation.</param>
-      /// <returns>The site's ECI coordinates.</returns>
-      public EciTime GetPosition(Julian date)
+      /// <returns>The site's ECI coordinates at the given time.</returns>
+      public EciTime PositionEci(Julian time)
       {
-         return new EciTime(Geo, date);
+         return new EciTime(Geo, time);
+      }
+
+      /// <summary>
+      /// Calculates the ECI coordinates of the site.
+      /// </summary>
+      /// <param name="utc">Time of position calculation.</param>
+      /// <returns>The site's ECI coordinates at the given time.</returns>
+      public EciTime PositionEci(DateTime utc)
+      {
+         return new EciTime(Geo, new Julian(utc));
       }
 
       /// <summary>
@@ -96,7 +123,7 @@ namespace Zeptomoby.OrbitTools
          // Calculate the ECI coordinates for this Site object at the time
          // of interest.
          Julian  date     = eci.Date;
-         EciTime eciSite  = GetPosition(date);
+         EciTime eciSite  = PositionEci(date);
          Vector vecRgRate = new Vector(eci.Velocity.X - eciSite.Velocity.X,
                                        eci.Velocity.Y - eciSite.Velocity.Y,
                                        eci.Velocity.Z - eciSite.Velocity.Z);
@@ -151,17 +178,17 @@ namespace Zeptomoby.OrbitTools
       // Elevation correction for atmospheric refraction.
       // Reference:  Astronomical Algorithms by Jean Meeus, pp. 101-104
       // Note:  Correction is meaningless when apparent elevation is below horizon
-      topo.m_El += Globals.ToRadians((1.02 / 
+      topo.ElevationRad += Globals.ToRadians((1.02 / 
                                     Math.Tan(Globals.ToRadians(Globals.ToDegrees(el) + 10.3 / 
                                     (Globals.ToDegrees(el) + 5.11)))) / 60.0);
-      if (topo.m_El < 0.0)
+      if (topo.ElevationRad < 0.0)
       {
-         topo.m_El = el;    // Reset to true elevation
+         topo.ElevationRad = el;    // Reset to true elevation
       }
 
-      if (topo.m_El > (Globals.PI / 2))
+      if (topo.ElevationRad > (Math.PI / 2.0))
       {
-         topo.m_El = (Globals.PI / 2);
+         topo.ElevationRad = (Math.PI / 2.0);
       }
 #endif
          return topo;

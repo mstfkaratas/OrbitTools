@@ -22,7 +22,7 @@ The "Core" assembly contains several utility classes:
       
 The "Orbit" assembly contains the main SGP4/SDP4 implementation:
 
-   Orbit – Given a Tle object, this class provides information about the orbit
+   Satellite - Given a Tle object, this class provides information about the orbit
            of the described satellite, including inclination, perigee, 
            eccentricity, etc. Most importantly, it provides ECI coordinates and 
            velocity for the satellite.
@@ -33,4 +33,4 @@ The "Orbit" assembly contains the main SGP4/SDP4 implementation:
 All classes are contained within the Zeptomoby.OrbitTools namespace.
 
 Michael F. Henry
-September, 2011
+June, 2014

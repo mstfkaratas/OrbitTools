@@ -9,7 +9,7 @@ using System;
 namespace Zeptomoby.OrbitTools
 {
    /// <summary>
-   /// Encapsulates an Earth Centered Inertial coordinate position/velocity.
+   /// Encapsulates an Earth-Centered Inertial coordinate position/velocity.
    /// </summary>
    public class Eci
    {
